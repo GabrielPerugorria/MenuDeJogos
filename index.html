@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GG • Gabriel Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== GG • GABRIEL GAMES — STYLESHEET ===== */
+/* Fonts: Orbitron (display), Rajdhani (body), Space Mono (mono) */
+
+:root {
+  --bg: #07050f;
+  --bg2: #0d0a1a;
+  --bg3: #120f22;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.07);
+  --border: rgba(139,92,246,0.2);
+  --border-bright: rgba(139,92,246,0.5);
+  --purple: #8b5cf6;
+  --purple2: #a78bfa;
+  --purple3: #6d28d9;
+  --neon: #c084fc;
+  --neon2: #e879f9;
+  --blue: #60a5fa;
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --text: #f1f0f7;
+  --text2: #b8b4d0;
+  --text3: #6b6880;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-neon: 0 0 24px rgba(139,92,246,0.4);
+  --glow-purple: 0 0 40px rgba(139,92,246,0.3), 0 0 80px rgba(139,92,246,0.1);
+  --glow-blue: 0 0 40px rgba(96,165,250,0.3), 0 0 80px rgba(96,165,250,0.1);
+  --glow-green: 0 0 40px rgba(52,211,153,0.3), 0 0 80px rgba(52,211,153,0.1);
+  --glow-orange: 0 0 40px rgba(251,146,60,0.3), 0 0 80px rgba(251,146,60,0.1);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--purple3); border-radius:3px; }
+
+/* ===== LOADER ===== */
+.loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+.loader.fade-out { opacity:0; visibility:hidden; }
+.loader-content { text-align:center; }
+.loader-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--purple), var(--neon), var(--purple2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+  margin-bottom: 8px;
+}
+@keyframes pulse-glow {
+  0%,100% { filter: drop-shadow(0 0 20px rgba(139,92,246,0.8)); }
+  50% { filter: drop-shadow(0 0 40px rgba(192,132,252,1)); }
+}
+.loader-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem; letter-spacing: 6px;
+  color: var(--text2); margin-bottom: 40px;
+}
+.loader-bar {
+  width: 240px; height: 3px;
+  background: var(--surface2); border-radius: 2px;
+  margin: 0 auto 16px; overflow: hidden;
+}
+.loader-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--purple3), var(--neon));
+  border-radius: 2px;
+  animation: load-fill 2.2s ease-in-out forwards;
+}
+@keyframes load-fill { to { width: 100%; } }
+.loader-status {
+  font-size: 0.8rem; color: var(--text3); letter-spacing: 2px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ===== TOASTS ===== */
+#toast-container {
+  position: fixed; top: 90px; right: 20px;
+  z-index: 5000; display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+  background: var(--bg3);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow), var(--shadow-neon);
+  animation: toast-in 0.3s ease;
+  max-width: 320px;
+  backdrop-filter: blur(12px);
+}
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast.out { animation: toast-out 0.3s ease forwards; }
+@keyframes toast-in { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
+@keyframes toast-out { to { opacity:0; transform: translateX(40px); } }
+
+/* ===== MODALS ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 4000;
+  background: rgba(7,5,15,0.85);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal-box {
+  background: var(--bg3);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%; max-width: 480px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow), var(--shadow-neon);
+  position: relative;
+  animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modal-in { from { opacity:0; transform: scale(0.9) translateY(20px); } }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--surface2); border: none;
+  color: var(--text2); width: 32px; height: 32px;
+  border-radius: 50%; cursor: pointer; font-size: 0.85rem;
+  transition: var(--transition);
+}
+.modal-close:hover { background: var(--red); color: white; }
+.modal-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2rem; margin-bottom: 24px;
+  color: var(--purple2);
+}
+
+/* Profile modal specifics */
+.profile-avatar-section { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.avatar-display { font-size: 3rem; width:64px; height:64px; display:flex; align-items:center; justify-content:center; background:var(--surface2); border-radius:50%; border:2px solid var(--border-bright); }
+.avatar-picker { display:flex; flex-wrap:wrap; gap:8px; }
+.avatar-opt { font-size:1.4rem; cursor:pointer; padding:4px; border-radius:8px; transition:var(--transition); }
+.avatar-opt:hover { background:var(--surface2); transform:scale(1.2); }
+.profile-field { margin-bottom:16px; }
+.profile-field label { display:block; font-size:0.85rem; color:var(--text2); margin-bottom:6px; letter-spacing:1px; }
+.profile-field input {
+  width:100%; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:12px 16px;
+  color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem;
+  outline:none; transition:var(--transition);
+}
+.profile-field input:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(139,92,246,0.2); }
+.xp-section { margin-bottom:20px; }
+.xp-label { font-size:0.9rem; color:var(--text2); margin-bottom:8px; }
+.xp-bar-wrap { height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+.xp-bar-fill { height:100%; background:linear-gradient(90deg,var(--purple3),var(--neon)); border-radius:3px; transition:width 0.5s ease; }
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+.stat-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; text-align:center; }
+.stat-num { font-family:'Orbitron',monospace; font-size:1.5rem; color:var(--purple2); }
+.stat-lbl { font-size:0.75rem; color:var(--text3); margin-top:2px; }
+.badges-section { margin-bottom:20px; }
+.badges-title { font-size:0.85rem; color:var(--text2); letter-spacing:1px; margin-bottom:10px; }
+.badges-grid { display:flex; flex-wrap:wrap; gap:8px; }
+.badge { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:0.8rem; }
+.badge.earned { border-color:var(--yellow); color:var(--yellow); }
+
+/* Settings modal */
+.setting-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 0; border-bottom:1px solid var(--border);
+  font-size:1rem;
+}
+.toggle { position:relative; display:inline-block; width:50px; height:26px; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider { position:absolute; inset:0; background:var(--surface2); border-radius:13px; cursor:pointer; transition:var(--transition); }
+.slider:before { position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px; background:var(--text3); border-radius:50%; transition:var(--transition); }
+.toggle input:checked + .slider { background:var(--purple); }
+.toggle input:checked + .slider:before { transform:translateX(24px); background:white; }
+.volume-section { padding-top:16px; }
+.volume-section label { display:block; font-size:0.9rem; color:var(--text2); margin-bottom:10px; }
+.volume-section input[type=range] { width:100%; accent-color:var(--purple); }
+
+/* ===== HEADER ===== */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(7,5,15,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.header.scrolled { background: rgba(7,5,15,0.95); box-shadow: var(--shadow); }
+.header-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 24px; height: 70px;
+  display: flex; align-items: center; gap: 24px;
+}
+.logo {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; text-decoration: none;
+  flex-shrink: 0;
+}
+.logo-gg {
+  font-family: 'Orbitron', monospace; font-weight: 900;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, var(--purple), var(--neon));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.logo-dot { color: var(--purple2); font-size: 1.2rem; }
+.logo-name {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 1.05rem; letter-spacing: 1px; color: var(--text2);
+  display: none;
+}
+@media (min-width: 640px) { .logo-name { display: block; } }
+.nav { display:flex; align-items:center; gap:4px; margin-left:auto; }
+.nav-link {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  color: var(--text2); font-weight: 600; font-size: 0.95rem;
+  cursor: pointer; transition: var(--transition); letter-spacing: 0.5px;
+  text-decoration: none;
+}
+.nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface2); }
+.nav-link.active { color: var(--purple2); }
+@media (max-width: 640px) { .nav { display:none; } }
+.header-player {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 40px; padding: 6px 14px 6px 8px;
+  cursor: pointer; transition: var(--transition);
+  flex-shrink: 0;
+}
+.header-player:hover { border-color: var(--purple); }
+.h-avatar { font-size: 1.3rem; }
+.h-info { display: flex; flex-direction: column; }
+.h-name { font-size: 0.85rem; font-weight: 700; line-height: 1.2; }
+.h-level { font-size: 0.7rem; color: var(--purple2); }
+@media (max-width: 480px) { .header-player { display:none; } }
+.menu-btn {
+  background: none; border: none; color: var(--text);
+  font-size: 1.4rem; cursor: pointer; padding: 4px;
+  display: none;
+}
+@media (max-width: 640px) { .menu-btn { display:block; } }
+.mobile-nav {
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 12px 0;
+}
+.mobile-nav.hidden { display:none; }
+.mnav-link {
+  display: block; padding: 12px 24px;
+  color: var(--text2); cursor: pointer;
+  font-size: 1rem; font-weight: 600;
+  transition: var(--transition);
+}
+.mnav-link:hover { color: var(--text); background: var(--surface); }
+
+/* ===== PAGES ===== */
+.page { display: none; }
+.page.active { display: block; }
+#page-hub.active { display: block; }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; padding-top: 70px;
+}
+#particles-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(109,40,217,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(139,92,246,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 20% 70%, rgba(96,165,250,0.1) 0%, transparent 50%);
+}
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center; padding: 40px 24px;
+  max-width: 900px;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(139,92,246,0.15);
+  border: 1px solid rgba(139,92,246,0.35);
+  border-radius: 20px; padding: 6px 20px;
+  font-size: 0.85rem; letter-spacing: 2px;
+  color: var(--purple2); margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+}
+.hero-title {
+  display: flex; flex-direction: column; align-items: center;
+  margin-bottom: 20px;
+}
+.hero-gg {
+  font-family: 'Orbitron', monospace; font-weight: 900;
+  font-size: clamp(4rem, 15vw, 10rem); line-height: 0.9;
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6, #c084fc, #e879f9);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(139,92,246,0.5));
+  animation: float-hero 4s ease-in-out infinite;
+}
+@keyframes float-hero {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.hero-sub {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: clamp(0.9rem, 3vw, 1.5rem);
+  letter-spacing: 8px; color: var(--text2);
+  margin-top: 8px;
+}
+.hero-desc {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--text2); margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+.hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 60px;
+  padding: 16px 32px; backdrop-filter: blur(12px);
+  display: inline-flex;
+}
+.hs { text-align: center; padding: 0 24px; }
+.hs span { display: block; font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 700; color: var(--purple2); }
+.hs small { font-size: 0.75rem; color: var(--text3); letter-spacing: 1px; }
+.hs-div { width: 1px; height: 40px; background: var(--border); }
+.hero-scroll {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  color: var(--text3); font-size: 1.2rem; z-index: 2;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ===== GAMES SECTION ===== */
+.games-section {
+  max-width: 1280px; margin: 0 auto;
+  padding: 80px 24px;
+}
+.section-header { text-align: center; margin-bottom: 56px; }
+.section-title {
+  font-family: 'Orbitron', monospace; font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: 12px;
+}
+.section-sub { color: var(--text2); font-size: 1.1rem; letter-spacing: 1px; }
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.game-card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(12px);
+}
+.game-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow), var(--shadow-neon);
+}
+.game-card.featured {
+  border-color: rgba(192,132,252,0.4);
+  background: linear-gradient(135deg, rgba(109,40,217,0.15), rgba(139,92,246,0.1));
+}
+.card-glow {
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  opacity: 0.15; filter: blur(40px);
+  transition: var(--transition);
+}
+.game-card:hover .card-glow { opacity: 0.3; }
+.glow-purple { background: var(--purple); }
+.glow-blue { background: var(--blue); }
+.glow-green { background: var(--green); }
+.glow-orange { background: var(--orange); }
+.card-tag {
+  position: absolute; top: 16px; right: 16px;
+  font-size: 0.7rem; letter-spacing: 1.5px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+}
+.tag-action { background: rgba(96,165,250,0.2); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+.tag-featured { background: rgba(192,132,252,0.2); color: var(--neon); border: 1px solid rgba(192,132,252,0.3); }
+.tag-puzzle { background: rgba(52,211,153,0.2); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+.tag-strategy { background: rgba(251,146,60,0.2); color: var(--orange); border: 1px solid rgba(251,146,60,0.3); }
+.card-difficulty {
+  display: flex; gap: 4px; margin-bottom: 16px;
+}
+.diff-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); }
+.diff-dot.active { background: var(--purple2); border-color: var(--purple2); }
+.card-icon { font-size: 2.8rem; margin-bottom: 16px; display: block; }
+.card-body h3 {
+  font-family: 'Orbitron', monospace; font-size: 1.1rem;
+  margin-bottom: 10px; color: var(--text);
+}
+.card-body p { color: var(--text2); font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
+.card-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.card-meta span { font-size: 0.8rem; color: var(--text3); }
+.card-btn {
+  width: 100%; background: linear-gradient(135deg, var(--purple3), var(--purple));
+  color: white; border: none; border-radius: var(--radius-sm);
+  padding: 12px; font-family: 'Orbitron', monospace; font-size: 0.8rem;
+  letter-spacing: 1px; cursor: pointer; transition: var(--transition);
+}
+.card-btn:hover { background: linear-gradient(135deg, var(--purple), var(--neon)); transform: scale(1.02); }
+
+/* ===== QUICK STATS ===== */
+.quick-stats-section {
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 60px 24px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px; max-width: 1280px; margin: 0 auto;
+}
+.qs-card { text-align: center; padding: 24px; }
+.qs-icon { font-size: 2rem; margin-bottom: 12px; }
+.qs-val { font-family: 'Orbitron', monospace; font-size: 2.5rem; color: var(--purple2); margin-bottom: 4px; }
+.qs-lbl { color: var(--text3); font-size: 0.85rem; letter-spacing: 1px; }
+
+/* ===== RANKING PAGE ===== */
+.page-inner { max-width: 900px; margin: 0 auto; padding: 100px 24px 60px; }
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header h2 { font-family: 'Orbitron', monospace; font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 8px; }
+.page-header p { color: var(--text2); }
+.ranking-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+.rtab {
+  flex: 1; min-width: 100px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 10px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.rtab:hover { border-color: var(--purple); color: var(--text); }
+.rtab.active { background: linear-gradient(135deg, var(--purple3), var(--purple)); border-color: var(--purple); color: white; }
+.ranking-list { display: flex; flex-direction: column; gap: 12px; }
+.rank-entry {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px 20px;
+  transition: var(--transition);
+}
+.rank-entry:hover { border-color: var(--border-bright); }
+.rank-num { font-family: 'Orbitron', monospace; font-size: 1.2rem; color: var(--text3); width: 32px; }
+.rank-num.gold { color: var(--yellow); }
+.rank-num.silver { color: #94a3b8; }
+.rank-num.bronze { color: var(--orange); }
+.rank-name { flex: 1; font-weight: 600; }
+.rank-score { font-family: 'Orbitron', monospace; color: var(--purple2); }
+.rank-empty { text-align: center; padding: 60px; color: var(--text3); font-size: 1.1rem; }
+
+/* ===== GAME PAGES ===== */
+.game-header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 16px 24px; padding-top: 86px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.game-header h2 { font-family: 'Orbitron', monospace; font-size: 1.2rem; flex: 1; }
+.back-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 8px 16px; cursor: pointer; font-size: 0.9rem;
+  transition: var(--transition); white-space: nowrap;
+}
+.back-btn:hover { border-color: var(--purple); color: var(--text); }
+.game-mode-btns { display: flex; gap: 8px; }
+.gmode-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 8px 16px; cursor: pointer; font-size: 0.85rem;
+  font-weight: 600; transition: var(--transition);
+}
+.gmode-btn.active { background: linear-gradient(135deg,var(--purple3),var(--purple)); border-color:var(--purple); color:white; }
+.game-body {
+  max-width: 900px; margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  width: 100%; background: linear-gradient(135deg, var(--purple3), var(--purple));
+  color: white; border: none; border-radius: var(--radius-sm);
+  padding: 14px; font-family: 'Orbitron', monospace; font-size: 0.85rem;
+  letter-spacing: 1px; cursor: pointer; transition: var(--transition);
+}
+.btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 12px 24px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+  font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.btn-secondary:hover { border-color: var(--purple); color: var(--text); }
+.btn-secondary.active {
+  background: var(--purple3);
+  border-color: var(--purple);
+  color: white;
+}
+.btn-danger {
+  background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.4);
+  color: var(--red); border-radius: var(--radius-sm);
+  padding: 12px 24px; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+  font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.25); }
+
+/* ===== SCORE PANEL ===== */
+.score-panel {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.score-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px; text-align: center;
+}
+.score-box.active { border-color: var(--purple); background: rgba(139,92,246,0.1); }
+.sb-label { font-size: 0.75rem; color: var(--text3); letter-spacing: 1px; margin-bottom: 4px; }
+.sb-value { font-family: 'Orbitron', monospace; font-size: 1.5rem; color: var(--purple2); }
+
+/* ===== DIFFICULTY SELECT ===== */
+.diff-select { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.diff-btn {
+  flex: 1; min-width: 80px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text2); border-radius: var(--radius-sm);
+  padding: 10px; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition); text-align: center;
+}
+.diff-btn:hover { border-color: var(--purple); color: var(--text); }
+.diff-btn.active { background: linear-gradient(135deg,var(--purple3),var(--purple)); border-color:var(--purple); color:white; }
+
+/* ===== RPS GAME ===== */
+.rps-arena {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 24px; align-items: center; margin-bottom: 32px;
+}
+.rps-player-side, .rps-ai-side { text-align: center; }
+.rps-player-label {
+  font-size: 0.8rem; color: var(--text3); letter-spacing: 2px;
+  margin-bottom: 16px; font-family: 'Space Mono', monospace;
+}
+.rps-choice-display {
+  font-size: 5rem; min-height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  transition: var(--transition);
+}
+.rps-choice-display.win { border-color: var(--green); box-shadow: 0 0 20px rgba(52,211,153,0.3); }
+.rps-choice-display.lose { border-color: var(--red); box-shadow: 0 0 20px rgba(248,113,113,0.3); }
+.rps-choice-display.draw { border-color: var(--yellow); box-shadow: 0 0 20px rgba(251,191,36,0.3); }
+.rps-vs {
+  font-family: 'Orbitron', monospace; font-size: 1.5rem; color: var(--text3);
+}
+.rps-choices { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+.rps-btn {
+  flex: 1; max-width: 120px;
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 20px 10px;
+  cursor: pointer; transition: var(--transition); text-align: center;
+}
+.rps-btn:hover { border-color: var(--purple); transform: translateY(-4px); box-shadow: var(--shadow-neon); }
+.rps-btn .choice-icon { font-size: 2.5rem; display: block; margin-bottom: 6px; }
+.rps-btn .choice-name { font-size: 0.75rem; color: var(--text2); font-weight: 600; letter-spacing: 1px; }
+.rps-result {
+  text-align: center; padding: 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 24px;
+  font-size: 1.3rem; font-weight: 700;
+}
+.rps-result.win { border-color: var(--green); color: var(--green); }
+.rps-result.lose { border-color: var(--red); color: var(--red); }
+.rps-result.draw { border-color: var(--yellow); color: var(--yellow); }
+.series-indicator { display:flex; gap:8px; justify-content:center; margin-bottom:24px; flex-wrap:wrap; }
+.series-dot { width:16px; height:16px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); }
+.series-dot.win { background:var(--green); border-color:var(--green); }
+.series-dot.lose { background:var(--red); border-color:var(--red); }
+.series-dot.draw { background:var(--yellow); border-color:var(--yellow); }
+.rps-history { max-height: 200px; overflow-y: auto; }
+.history-row {
+  display:flex; gap:12px; align-items:center;
+  padding:8px 12px; border-bottom:1px solid var(--border);
+  font-size:0.85rem;
+}
+
+/* ===== GENIUS GAME ===== */
+.genius-container { display:flex; flex-direction:column; align-items:center; gap:32px; }
+.genius-hud {
+  display:flex; gap:24px; align-items:center; flex-wrap:wrap; justify-content:center;
+}
+.genius-stat { text-align:center; }
+.genius-stat-val { font-family:'Orbitron',monospace; font-size:2rem; color:var(--purple2); }
+.genius-stat-lbl { font-size:0.75rem; color:var(--text3); letter-spacing:1px; }
+.genius-board {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(circle at top left,
+      rgba(255,255,255,0.12),
+      rgba(0,0,0,0) 30%),
+    radial-gradient(circle at bottom,
+      #1e1e1e,
+      #0b0b0f 70%);
+
+  box-shadow:
+    inset -12px -12px 20px rgba(0,0,0,0.8),
+    inset 10px 10px 20px rgba(255,255,255,0.03),
+    0 0 25px rgba(132, 0, 255, 0.35),
+    0 25px 60px rgba(0,0,0,0.8);
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  overflow: hidden;
+
+  border: 14px solid #111;
+
+  transform: perspective(1200px) rotateX(8deg);
+}
+
+/* REFLEXO GERAL */
+.genius-board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.15),
+      rgba(255,255,255,0.02) 30%,
+      rgba(255,255,255,0) 50%
+    );
+
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* SOMBRA EXTERNA */
+.genius-board::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  z-index: -1;
+
+  background:
+    radial-gradient(circle,
+      rgba(140,0,255,0.3),
+      transparent 70%);
+
+  filter: blur(20px);
+}
+
+/* QUADRANTES */
+.genius-pad {
+  position: relative;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+
+  overflow: hidden;
+}
+
+.genius-pad:hover {
+  transform: scale(1.02);
+}
+
+.genius-pad:active {
+  transform: scale(0.98);
+}
+
+/* REFLEXO INTERNO */
+.genius-pad::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.28),
+      rgba(255,255,255,0.02) 40%,
+      transparent 60%
+    );
+
+  pointer-events: none;
+}
+
+/* SOMBRA INTERNA */
+.genius-pad::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  box-shadow:
+    inset 0 -14px 18px rgba(0,0,0,0.35),
+    inset 0 10px 12px rgba(255,255,255,0.08);
+
+  pointer-events: none;
+}
+
+/* VERDE */
+.genius-green {
+  background:
+    radial-gradient(circle at top left,
+      #42ff93,
+      #15773a 70%);
+
+  border-right: 8px solid #111;
+  border-bottom: 8px solid #111;
+}
+
+/* VERMELHO */
+.genius-red {
+  background:
+    radial-gradient(circle at top left,
+      #ff5b5b,
+      #7c1212 70%);
+
+  border-left: 8px solid #111;
+  border-bottom: 8px solid #111;
+}
+
+/* AMARELO */
+.genius-yellow {
+  background:
+    radial-gradient(circle at top left,
+      #ffe95c,
+      #7d6d0f 70%);
+
+  border-right: 8px solid #111;
+  border-top: 8px solid #111;
+}
+
+/* AZUL */
+.genius-blue {
+  background:
+    radial-gradient(circle at top left,
+      #5ea7ff,
+      #123d7f 70%);
+
+  border-left: 8px solid #111;
+  border-top: 8px solid #111;
+}
+
+/* FORMATO CORRETO */
+.genius-green {
+  border-top-left-radius: 100%;
+}
+
+.genius-red {
+  border-top-right-radius: 100%;
+}
+
+.genius-yellow {
+  border-bottom-left-radius: 100%;
+}
+
+.genius-blue {
+  border-bottom-right-radius: 100%;
+}
+
+/* ESTADO ACESO */
+.genius-pad.active {
+  filter: brightness(1.5);
+
+  box-shadow:
+    0 0 35px rgba(255,255,255,0.45),
+    0 0 60px currentColor,
+    inset 0 0 30px rgba(255,255,255,0.3);
+
+  z-index: 5;
+}
+
+/* MODO PRETO E BRANCO */
+.genius-board.monochrome .genius-green,
+.genius-board.monochrome .genius-red,
+.genius-board.monochrome .genius-yellow,
+.genius-board.monochrome .genius-blue {
+
+  background:
+    radial-gradient(circle at top left,
+      #f5f5f5,
+      #5a5a5a 70%) !important;
+
+  filter: grayscale(100%);
+
+  transition:
+    background 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* QUADRANTES DESLIGADOS */
+.genius-board.monochrome .genius-pad {
+  opacity: 0.85;
+
+  box-shadow:
+    inset 0 -12px 18px rgba(0,0,0,0.45),
+    inset 0 8px 10px rgba(255,255,255,0.08);
+}
+
+/* QUADRANTE ACESO */
+.genius-board.monochrome .genius-pad.active {
+
+  background:
+    radial-gradient(circle at center,
+      #ffffff,
+      #d9d9d9 45%,
+      #7a7a7a 100%) !important;
+
+  filter: brightness(1.6);
+
+  box-shadow:
+    0 0 18px rgba(255,255,255,0.9),
+    0 0 40px rgba(255,255,255,0.7),
+    0 0 70px rgba(255,255,255,0.45),
+    inset 0 0 25px rgba(255,255,255,0.5);
+
+  z-index: 5;
+}
+
+/* CENTRO MONOCROMÁTICO */
+.genius-board.monochrome .genius-center {
+
+  background:
+    radial-gradient(circle at top,
+      #2e2e2e,
+      #090909 75%);
+
+  border-color: #2a2a2a;
+
+  box-shadow:
+    inset 0 6px 10px rgba(255,255,255,0.04),
+    inset 0 -10px 18px rgba(0,0,0,0.9),
+    0 0 18px rgba(255,255,255,0.08),
+    0 10px 25px rgba(0,0,0,0.8);
+}
+
+/* TEXOS */
+.genius-board.monochrome .genius-center h2 {
+  color: #f5f5f5;
+
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.25);
+}
+
+.genius-board.monochrome .genius-center span {
+  color: #bdbdbd;
+}
+
+/* BORDA EXTERNA */
+.genius-board.monochrome {
+
+  border-color: #181818;
+
+  box-shadow:
+    inset -12px -12px 20px rgba(0,0,0,0.9),
+    inset 10px 10px 20px rgba(255,255,255,0.02),
+    0 0 25px rgba(255,255,255,0.06),
+    0 25px 60px rgba(0,0,0,0.85);
+}
+
+/* GLOW BRANCO */
+.genius-board.monochrome::after {
+
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,0.12),
+      transparent 70%);
+
+  filter: blur(24px);
+}
+
+/* CENTRO */
+.genius-center {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(circle at top,
+      #24242b,
+      #09090d 70%);
+
+  border: 8px solid #111;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 30;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  box-shadow:
+    inset 0 8px 12px rgba(255,255,255,0.05),
+    inset 0 -10px 20px rgba(0,0,0,0.8),
+    0 0 20px rgba(132,0,255,0.35),
+    0 10px 30px rgba(0,0,0,0.7);
+}
+
+.genius-center h2 {
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  margin: 0;
+
+  text-shadow:
+    0 0 10px rgba(132,0,255,0.7);
+}
+
+.genius-center span {
+  color: #a855f7;
+  font-size: 11px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* BOTÕES */
+.genius-controls {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.genius-btn {
+  border: none;
+  padding: 16px 34px;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(135deg,
+      #6d28d9,
+      #9f67ff);
+
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+  box-shadow:
+    0 10px 30px rgba(132,0,255,0.35);
+}
+
+.genius-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+
+  box-shadow:
+    0 15px 35px rgba(132,0,255,0.55);
+}
+
+/* TEXTO */
+.genius-status {
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+
+  text-shadow:
+    0 0 12px rgba(168,85,247,0.5);
+}
+
+/* SHAKE */
+.genius-board.error {
+  animation: geniusShake 0.4s ease;
+}
+
+@keyframes geniusShake {
+  0% { transform: translateX(0) rotateX(8deg); }
+  20% { transform: translateX(-10px) rotateX(8deg); }
+  40% { transform: translateX(10px) rotateX(8deg); }
+  60% { transform: translateX(-8px) rotateX(8deg); }
+  80% { transform: translateX(8px) rotateX(8deg); }
+  100% { transform: translateX(0) rotateX(8deg); }
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  .genius-board {
+    width: 320px;
+    height: 320px;
+    border-width: 10px;
+  }
+
+  .genius-center {
+    width: 100px;
+    height: 100px;
+  }
+
+  .genius-center h2 {
+    font-size: 16px;
+  }
+
+  .genius-status {
+    font-size: 18px;
+  }
+}
+
+/* ===== GUESS GAME ===== */
+.guess-container { max-width:600px; margin:0 auto; }
+.guess-input-row {
+  display:flex; gap:12px; margin-bottom:24px;
+}
+.guess-input {
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:14px 20px;
+  color:var(--text); font-family:'Space Mono',monospace; font-size:1.5rem;
+  text-align:center; outline:none; transition:var(--transition);
+}
+.guess-input:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(139,92,246,0.2); }
+.guess-hint {
+  text-align:center; padding:24px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:24px;
+  font-size:1.5rem; font-weight:700; min-height:80px;
+  display:flex; align-items:center; justify-content:center;
+  transition:var(--transition);
+}
+.guess-hint.higher { border-color:var(--green); color:var(--green); }
+.guess-hint.lower { border-color:var(--orange); color:var(--orange); }
+.guess-hint.correct { border-color:var(--purple); color:var(--purple2); }
+.guess-attempts { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-bottom:24px; }
+.attempt-pip { width:12px; height:12px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); }
+.attempt-pip.used { background:var(--purple); border-color:var(--purple); }
+.attempt-pip.wrong { background:var(--red); border-color:var(--red); }
+.attempt-pip.right { background:var(--green); border-color:var(--green); }
+.guess-history { max-height:220px; overflow-y:auto; }
+.guess-hist-row {
+  display:flex; gap:16px; padding:8px 16px;
+  border-bottom:1px solid var(--border); font-size:0.9rem;
+}
+.timer-display {
+  font-family:'Space Mono',monospace; font-size:2rem;
+  text-align:center; color:var(--yellow); margin-bottom:16px;
+}
+.number-range {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px;
+  margin-bottom:24px;
+}
+.range-bar { height:8px; background:var(--surface2); border-radius:4px; margin-top:12px; position:relative; }
+.range-fill { position:absolute; height:100%; background:linear-gradient(90deg,var(--purple3),var(--neon)); border-radius:4px; transition:width 0.3s ease; }
+.range-marker { position:absolute; top:-4px; width:16px; height:16px; border-radius:50%; background:var(--yellow); transform:translateX(-50%); transition:left 0.3s ease; }
+
+/* ===== TTT GAME ===== */
+.ttt-container { max-width:500px; margin:0 auto; }
+.ttt-turn {
+  text-align:center; font-size:1.2rem; font-weight:700;
+  margin-bottom:20px; padding:16px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+}
+.ttt-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:10px; margin-bottom:28px;
+}
+.ttt-cell {
+  aspect-ratio:1; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  cursor:pointer; font-size:clamp(2rem,8vw,4rem);
+  display:flex; align-items:center; justify-content:center;
+  transition:var(--transition); user-select:none;
+}
+.ttt-cell:hover:not(.taken) { border-color:var(--purple); background:rgba(139,92,246,0.1); }
+.ttt-cell.taken { cursor:default; }
+.ttt-cell.x { color:var(--blue); }
+.ttt-cell.o { color:var(--neon); }
+.ttt-cell.winner { border-color:var(--green) !important; background:rgba(52,211,153,0.15) !important; animation:win-pulse 0.5s ease; }
+@keyframes win-pulse { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+.ttt-result {
+  text-align:center; padding:20px;
+  font-size:1.3rem; font-weight:700;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:24px; min-height:68px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ttt-result.win-x { border-color:var(--blue); color:var(--blue); }
+.ttt-result.win-o { border-color:var(--neon); color:var(--neon); }
+.ttt-result.draw-r { border-color:var(--yellow); color:var(--yellow); }
+.rounds-display { display:flex; gap:12px; justify-content:center; margin-bottom:24px; flex-wrap:wrap; }
+.round-dot { padding:6px 14px; border-radius:20px; font-size:0.8rem; font-weight:700; }
+.round-dot.x-win { background:rgba(96,165,250,0.2); color:var(--blue); border:1px solid rgba(96,165,250,0.4); }
+.round-dot.o-win { background:rgba(232,121,249,0.2); color:var(--neon); border:1px solid rgba(232,121,249,0.4); }
+.round-dot.draw-r { background:rgba(251,191,36,0.1); color:var(--yellow); border:1px solid rgba(251,191,36,0.3); }
+.ttt-thinking { text-align:center; color:var(--text3); font-size:0.85rem; letter-spacing:2px; height:20px; }
+
+/* ===== HISTORY SECTION ===== */
+.history-section {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; margin-top:24px;
+}
+.history-title { font-family:'Orbitron',monospace; font-size:0.85rem; color:var(--text2); letter-spacing:2px; margin-bottom:16px; }
+.history-empty { color:var(--text3); font-size:0.9rem; text-align:center; padding:20px; }
+
+/* ===== XP BAR (in game) ===== */
+.xp-inline {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:12px 16px;
+  margin-bottom:24px; display:flex; align-items:center; gap:12px;
+}
+.xp-inline-bar { flex:1; height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+.xp-inline-fill { height:100%; background:linear-gradient(90deg,var(--purple3),var(--neon)); border-radius:3px; transition:width 0.5s ease; }
+.xp-inline-label { font-size:0.8rem; color:var(--text3); white-space:nowrap; }
+
+/* ===== ANIMATIONS ===== */
+.fade-in { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+.pop { animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop { from{transform:scale(0.8)} to{transform:scale(1)} }
+
+/* ===== RESPONSIVENESS ===== */
+@media (max-width:768px) {
+  .rps-arena { grid-template-columns:1fr 1fr; }
+  .rps-vs { display:none; }
+}
+@media (max-width:480px) {
+  .hero-stats { padding:12px 20px; }
+  .hs { padding:0 16px; }
+  .game-header { padding:12px 16px; padding-top:82px; gap:10px; }
+  .game-header h2 { font-size:1rem; }
+  .rps-choice-display { font-size:3.5rem; padding:14px; }
+}
+@media (max-width: 600px) {
+  .genius-board {
+    width: 320px;
+    height: 320px;
+    border-width: 10px;
+  }
+
+  .genius-center {
+    width: 100px;
+    height: 100px;
+  }
+
+  .genius-center h2 {
+    font-size: 16px;
+  }
+
+  .genius-status {
+    font-size: 18px;
+  }
+}
+
+/* ===== SECTION-LEVEL LAYOUT ===== */
+.quick-stats-section { border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.game-options-row { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:center; }
+.label-sm { font-size:0.8rem; color:var(--text3); letter-spacing:1px; margin-bottom:6px; font-family:'Space Mono',monospace; }
+.sep { height:1px; background:var(--border); margin:24px 0; }
+
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loader" class="loader">
+  <div class="loader-content">
+    <div class="loader-logo">GG</div>
+    <div class="loader-text">GABRIEL GAMES</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <div class="loader-status">Inicializando sistema...</div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- PLAYER PROFILE MODAL -->
+<div id="profile-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profile-modal')">✕</button>
+    <h2 class="modal-title">👤 Perfil do Jogador</h2>
+    <div class="profile-avatar-section">
+      <div class="avatar-display" id="avatar-display">🎮</div>
+      <div class="avatar-picker">
+        <span class="avatar-opt" onclick="selectAvatar('🎮')">🎮</span>
+        <span class="avatar-opt" onclick="selectAvatar('🏆')">🏆</span>
+        <span class="avatar-opt" onclick="selectAvatar('⚔️')">⚔️</span>
+        <span class="avatar-opt" onclick="selectAvatar('🌟')">🌟</span>
+        <span class="avatar-opt" onclick="selectAvatar('🔥')">🔥</span>
+        <span class="avatar-opt" onclick="selectAvatar('💜')">💜</span>
+        <span class="avatar-opt" onclick="selectAvatar('🦊')">🦊</span>
+        <span class="avatar-opt" onclick="selectAvatar('🐉')">🐉</span>
+      </div>
+    </div>
+    <div class="profile-field">
+      <label>Nome do Jogador</label>
+      <input type="text" id="player-name-input" placeholder="Digite seu nome..." maxlength="16">
+    </div>
+    <div class="xp-section">
+      <div class="xp-label">Nível <span id="profile-level">1</span> — <span id="profile-xp">0</span> XP</div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="profile-xp-bar"></div></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="stat-wins">0</div><div class="stat-lbl">Vitórias</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-games">0</div><div class="stat-lbl">Partidas</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">Sequência</div></div>
+    </div>
+    <div class="badges-section">
+      <div class="badges-title">Conquistas</div>
+      <div class="badges-grid" id="badges-grid"></div>
+    </div>
+    <button class="btn-primary" onclick="saveProfile()">💾 Salvar Perfil</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+    <h2 class="modal-title">⚙️ Configurações</h2>
+    <div class="setting-row">
+      <span>🔊 Sons dos Jogos</span>
+      <label class="toggle"><input type="checkbox" id="sfx-toggle" checked onchange="toggleSFX()"><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <span>🎵 Música de Fundo</span>
+      <label class="toggle"><input type="checkbox" id="music-toggle" onchange="toggleMusic()"><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <span>✨ Animações</span>
+      <label class="toggle"><input type="checkbox" id="anim-toggle" checked onchange="toggleAnimations()"><span class="slider"></span></label>
+    </div>
+    <div class="setting-row">
+      <span>🌙 Tema Escuro</span>
+      <label class="toggle"><input type="checkbox" id="theme-toggle" checked onchange="toggleTheme()"><span class="slider"></span></label>
+    </div>
+    <div class="volume-section">
+      <label>Volume Geral: <span id="vol-label">70%</span></label>
+      <input type="range" id="vol-slider" min="0" max="100" value="70" oninput="setVolume(this.value)">
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header" id="main-header">
+    <div class="header-inner">
+      <div class="logo" onclick="showHub()">
+        <span class="logo-gg">GG</span>
+        <span class="logo-dot">•</span>
+        <span class="logo-name">Gabriel Games</span>
+      </div>
+      <nav class="nav">
+        <a onclick="showHub()" class="nav-link active" id="nav-hub">Hub</a>
+        <a onclick="showRanking()" class="nav-link" id="nav-rank">Ranking</a>
+        <a onclick="openModal('profile-modal')" class="nav-link">Perfil</a>
+        <a onclick="openModal('settings-modal')" class="nav-link">⚙️</a>
+      </nav>
+      <div class="header-player" onclick="openModal('profile-modal')">
+        <div class="h-avatar" id="h-avatar">🎮</div>
+        <div class="h-info">
+          <div class="h-name" id="h-name">Jogador</div>
+          <div class="h-level">Nv <span id="h-level">1</span></div>
+        </div>
+      </div>
+      <button class="menu-btn" onclick="toggleMobileNav()">☰</button>
+    </div>
+    <div class="mobile-nav hidden" id="mobile-nav">
+      <a onclick="showHub();toggleMobileNav()" class="mnav-link">🏠 Hub</a>
+      <a onclick="showRanking();toggleMobileNav()" class="mnav-link">🏆 Ranking</a>
+      <a onclick="openModal('profile-modal');toggleMobileNav()" class="mnav-link">👤 Perfil</a>
+      <a onclick="openModal('settings-modal');toggleMobileNav()" class="mnav-link">⚙️ Configurações</a>
+    </div>
+  </header>
+
+  <!-- HUB PAGE -->
+  <div id="page-hub" class="page active">
+    <!-- HERO -->
+    <section class="hero">
+      <canvas id="particles-canvas"></canvas>
+      <div class="hero-content">
+        <div class="hero-badge">🎮 Portal de Jogos Premium</div>
+        <h1 class="hero-title">
+          <span class="hero-gg">GG</span>
+          <span class="hero-sub">GABRIEL GAMES</span>
+        </h1>
+        <p class="hero-desc">Seu hub gamer definitivo. Jogue, compita, evolua.</p>
+        <div class="hero-stats">
+          <div class="hs"><span id="hs-games">4</span><small>Jogos</small></div>
+          <div class="hs-div"></div>
+          <div class="hs"><span id="hs-players">∞</span><small>Jogadores</small></div>
+          <div class="hs-div"></div>
+          <div class="hs"><span id="hs-matches">0</span><small>Partidas</small></div>
+        </div>
+      </div>
+      <div class="hero-scroll">▼</div>
+    </section>
+
+    <!-- GAMES GRID -->
+    <section class="games-section">
+      <div class="section-header">
+        <h2 class="section-title">🕹️ Jogos Disponíveis</h2>
+        <p class="section-sub">Escolha sua arena</p>
+      </div>
+      <div class="games-grid">
+
+        <!-- CARD: PPS -->
+        <div class="game-card" onclick="launchGame('rps')">
+          <div class="card-glow glow-blue"></div>
+          <div class="card-tag tag-action">Ação</div>
+          <div class="card-difficulty">
+            <span class="diff-dot active"></span><span class="diff-dot active"></span><span class="diff-dot"></span>
+          </div>
+          <div class="card-icon">✊</div>
+          <div class="card-body">
+            <h3>Pedra Papel Tesoura</h3>
+            <p>Desafie a IA ou um amigo. MD3 e MD5 disponíveis. Sistema de ranking completo.</p>
+            <div class="card-meta">
+              <span>👥 1-2 jogadores</span>
+              <span>⭐ 3 dificuldades</span>
+            </div>
+          </div>
+          <button class="card-btn">JOGAR AGORA →</button>
+        </div>
+
+        <!-- CARD: GENIUS -->
+        <div class="game-card featured" onclick="launchGame('genius')">
+          <div class="card-glow glow-purple"></div>
+          <div class="card-tag tag-featured">⭐ Destaque</div>
+          <div class="card-difficulty">
+            <span class="diff-dot active"></span><span class="diff-dot active"></span><span class="diff-dot active"></span>
+          </div>
+          <div class="card-icon">🟣</div>
+          <div class="card-body">
+            <h3>Genius</h3>
+            <p>O clássico jogo de memória de cores. Sequências progressivas com sons e luzes neon.</p>
+            <div class="card-meta">
+              <span>👥 1-2 jogadores</span>
+              <span>⭐ Recorde salvo</span>
+            </div>
+          </div>
+          <button class="card-btn">JOGAR AGORA →</button>
+        </div>
+
+        <!-- CARD: ADIVINHAÇÃO -->
+        <div class="game-card" onclick="launchGame('guess')">
+          <div class="card-glow glow-green"></div>
+          <div class="card-tag tag-puzzle">Puzzle</div>
+          <div class="card-difficulty">
+            <span class="diff-dot active"></span><span class="diff-dot"></span><span class="diff-dot"></span>
+          </div>
+          <div class="card-icon">🔢</div>
+          <div class="card-body">
+            <h3>Jogo da Adivinhação</h3>
+            <p>Adivinhe o número secreto de 0 a 100. Dicas, cronômetro e modo hardcore.</p>
+            <div class="card-meta">
+              <span>👥 1-2 jogadores</span>
+              <span>⏱️ Cronômetro</span>
+            </div>
+          </div>
+          <button class="card-btn">JOGAR AGORA →</button>
+        </div>
+
+        <!-- CARD: JOGO DA VELHA -->
+        <div class="game-card" onclick="launchGame('ttt')">
+          <div class="card-glow glow-orange"></div>
+          <div class="card-tag tag-strategy">Estratégia</div>
+          <div class="card-difficulty">
+            <span class="diff-dot active"></span><span class="diff-dot active"></span><span class="diff-dot"></span>
+          </div>
+          <div class="card-icon">⭕</div>
+          <div class="card-body">
+            <h3>Jogo da Velha</h3>
+            <p>O clássico repaginado. IA com 3 níveis, multiplayer local e sistema de rounds.</p>
+            <div class="card-meta">
+              <span>👥 1-2 jogadores</span>
+              <span>🤖 IA Avançada</span>
+            </div>
+          </div>
+          <button class="card-btn">JOGAR AGORA →</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <section class="quick-stats-section">
+      <div class="qs-card">
+        <div class="qs-icon">🏆</div>
+        <div class="qs-val" id="qs-wins">0</div>
+        <div class="qs-lbl">Vitórias Totais</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-icon">🎮</div>
+        <div class="qs-val" id="qs-total">0</div>
+        <div class="qs-lbl">Partidas Jogadas</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-icon">⭐</div>
+        <div class="qs-val" id="qs-xp">0</div>
+        <div class="qs-lbl">XP Total</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-icon">🔥</div>
+        <div class="qs-val" id="qs-streak">0</div>
+        <div class="qs-lbl">Melhor Sequência</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RANKING PAGE -->
+  <div id="page-ranking" class="page hidden">
+    <div class="page-inner">
+      <div class="page-header">
+        <h2>🏆 Hall da Fama</h2>
+        <p>Os melhores recordes de cada jogo</p>
+      </div>
+      <div class="ranking-tabs">
+        <button class="rtab active" onclick="switchRankTab('rps')">✊ PPS</button>
+        <button class="rtab" onclick="switchRankTab('genius')">🟣 Genius</button>
+        <button class="rtab" onclick="switchRankTab('guess')">🔢 Adivinhação</button>
+        <button class="rtab" onclick="switchRankTab('ttt')">⭕ Velha</button>
+      </div>
+      <div id="ranking-content" class="ranking-list"></div>
+    </div>
+  </div>
+
+  <!-- GAME: RPS -->
+  <div id="page-rps" class="page hidden">
+    <div class="game-header">
+      <button class="back-btn" onclick="showHub()">← Voltar</button>
+      <h2>✊ Pedra Papel Tesoura</h2>
+      <div class="game-mode-btns">
+        <button class="gmode-btn active" id="rps-mode-ai" onclick="rpsSetMode('ai')">vs IA</button>
+        <button class="gmode-btn" id="rps-mode-mp" onclick="rpsSetMode('mp')">Multiplayer</button>
+      </div>
+    </div>
+    <div class="game-body" id="rps-body"></div>
+  </div>
+
+  <!-- GAME: GENIUS -->
+  <div id="page-genius" class="page hidden">
+    <div class="game-header">
+      <button class="back-btn" onclick="showHub()">← Voltar</button>
+      <h2>🟣 Genius</h2>
+      <div class="game-mode-btns">
+        <button class="gmode-btn active" id="genius-mode-solo" onclick="geniusSetMode('solo')">Solo</button>
+        <button class="gmode-btn" id="genius-mode-mp" onclick="geniusSetMode('mp')">Multiplayer</button>
+      </div>
+    </div>
+    <div class="game-body" id="genius-body"></div>
+  </div>
+
+  <!-- GAME: GUESS -->
+  <div id="page-guess" class="page hidden">
+    <div class="game-header">
+      <button class="back-btn" onclick="showHub()">← Voltar</button>
+      <h2>🔢 Jogo da Adivinhação</h2>
+      <div class="game-mode-btns">
+        <button class="gmode-btn active" id="guess-mode-solo" onclick="guessSetMode('solo')">Solo</button>
+        <button class="gmode-btn" id="guess-mode-mp" onclick="guessSetMode('mp')">Multiplayer</button>
+      </div>
+    </div>
+    <div class="game-body" id="guess-body"></div>
+  </div>
+
+  <!-- GAME: TTT -->
+  <div id="page-ttt" class="page hidden">
+    <div class="game-header">
+      <button class="back-btn" onclick="showHub()">← Voltar</button>
+      <h2>⭕ Jogo da Velha</h2>
+      <div class="game-mode-btns">
+        <button class="gmode-btn active" id="ttt-mode-ai" onclick="tttSetMode('ai')">vs IA</button>
+        <button class="gmode-btn" id="ttt-mode-mp" onclick="tttSetMode('mp')">Multiplayer</button>
+      </div>
+    </div>
+    <div class="game-body" id="ttt-body"></div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+/* ===== GG • GABRIEL GAMES — app.js ===== */
+
+// ─────────────────────────────────────────
+//  STATE & STORAGE
+// ─────────────────────────────────────────
+const STORAGE_KEY = 'gg_gabriel_games_v2';
+let state = {
+  player: { name:'Jogador', avatar:'🎮', xp:0, level:1, wins:0, games:0, streak:0, bestStreak:0, badges:[] },
+  settings: { sfx:true, music:false, animations:true, theme:'dark', volume:70 },
+  records: { rps:[], genius:[], guess:[], ttt:[] },
+  history: { rps:[], genius:[], guess:[], ttt:[] },
+  totalMatches: 0
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) state = { ...state, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+loadState();
+
+// ─────────────────────────────────────────
+//  AUDIO ENGINE
+// ─────────────────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getACtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+function playTone(freq, type='sine', dur=0.15, vol=0.3) {
+  if (!state.settings.sfx) return;
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol * (state.settings.volume/100), ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+
+function playWin() { [523,659,784,1046].forEach((f,i)=>setTimeout(()=>playTone(f,'triangle',0.3,0.4),i*120)); }
+function playLose() { [400,300,200].forEach((f,i)=>setTimeout(()=>playTone(f,'sawtooth',0.2,0.3),i*120)); }
+function playClick() { playTone(800,'square',0.08,0.15); }
+function playBeep(freq=440) { playTone(freq,'sine',0.2,0.35); }
+function playError() { playTone(180,'square',0.3,0.4); }
+
+// Genius color tones
+const geniusTones = { green:392, blue:523, red:330, yellow:440 };
+
+// ─────────────────────────────────────────
+//  XP & LEVELS
+// ─────────────────────────────────────────
+function xpForLevel(lvl) { return lvl * 100; }
+function addXP(amount) {
+  state.player.xp += amount;
+  let leveled = false;
+  while (state.player.xp >= xpForLevel(state.player.level)) {
+    state.player.xp -= xpForLevel(state.player.level);
+    state.player.level++;
+    leveled = true;
+  }
+  if (leveled) { showToast(`🎉 Nível ${state.player.level} alcançado!`, 'success'); playWin(); }
+  updateHeaderPlayer();
+  checkBadges();
+  saveState();
+}
+function getXPPercent() {
+  return Math.min(100, Math.round((state.player.xp / xpForLevel(state.player.level)) * 100));
+}
+
+// ─────────────────────────────────────────
+//  BADGES
+// ─────────────────────────────────────────
+const ALL_BADGES = [
+  { id:'first_win', name:'Primeira Vitória', icon:'🏆', cond:p=>p.wins>=1 },
+  { id:'ten_games', name:'Veterano', icon:'🎮', cond:p=>p.games>=10 },
+  { id:'fifty_games', name:'Lendário', icon:'⭐', cond:p=>p.games>=50 },
+  { id:'streak5', name:'Em Chamas', icon:'🔥', cond:p=>p.bestStreak>=5 },
+  { id:'level5', name:'Ascendente', icon:'📈', cond:p=>p.level>=5 },
+  { id:'level10', name:'Mestre', icon:'👑', cond:p=>p.level>=10 },
+];
+function checkBadges() {
+  ALL_BADGES.forEach(b => {
+    if (!state.player.badges.includes(b.id) && b.cond(state.player)) {
+      state.player.badges.push(b.id);
+      showToast(`🏅 Conquista desbloqueada: ${b.icon} ${b.name}!`, 'success');
+      saveState();
+    }
+  });
+}
+
+// ─────────────────────────────────────────
+//  TOAST SYSTEM
+// ─────────────────────────────────────────
+function showToast(msg, type='') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),300); }, 3200);
+}
+
+// ─────────────────────────────────────────
+//  MODAL SYSTEM
+// ─────────────────────────────────────────
+function openModal(id) {
+  if (id==='profile-modal') refreshProfileModal();
+  document.getElementById(id).classList.remove('hidden');
+}
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+// ─────────────────────────────────────────
+//  PROFILE
+// ─────────────────────────────────────────
+function refreshProfileModal() {
+  const p = state.player;
+  document.getElementById('avatar-display').textContent = p.avatar;
+  document.getElementById('player-name-input').value = p.name;
+  document.getElementById('profile-level').textContent = p.level;
+  document.getElementById('profile-xp').textContent = p.xp;
+  document.getElementById('profile-xp-bar').style.width = getXPPercent()+'%';
+  document.getElementById('stat-wins').textContent = p.wins;
+  document.getElementById('stat-games').textContent = p.games;
+  document.getElementById('stat-streak').textContent = p.bestStreak;
+  const bg = document.getElementById('badges-grid');
+  bg.innerHTML = '';
+  ALL_BADGES.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'badge' + (p.badges.includes(b.id)?' earned':'');
+    el.textContent = b.icon+' '+b.name;
+    bg.appendChild(el);
+  });
+}
+function selectAvatar(av) {
+  state.player.avatar = av;
+  document.getElementById('avatar-display').textContent = av;
+}
+function saveProfile() {
+  const nameEl = document.getElementById('player-name-input');
+  state.player.name = nameEl.value.trim() || 'Jogador';
+  updateHeaderPlayer();
+  saveState();
+  closeModal('profile-modal');
+  showToast('✅ Perfil salvo!', 'success');
+}
+function updateHeaderPlayer() {
+  document.getElementById('h-avatar').textContent = state.player.avatar;
+  document.getElementById('h-name').textContent = state.player.name;
+  document.getElementById('h-level').textContent = state.player.level;
+  document.getElementById('qs-wins').textContent = state.player.wins;
+  document.getElementById('qs-total').textContent = state.player.games;
+  document.getElementById('qs-xp').textContent = state.player.level * 100 - xpForLevel(state.player.level) + state.player.xp;
+  document.getElementById('qs-streak').textContent = state.player.bestStreak;
+  document.getElementById('hs-matches').textContent = state.totalMatches;
+}
+
+// ─────────────────────────────────────────
+//  SETTINGS
+// ─────────────────────────────────────────
+function toggleSFX() { state.settings.sfx = document.getElementById('sfx-toggle').checked; saveState(); }
+function toggleMusic() { state.settings.music = document.getElementById('music-toggle').checked; saveState(); }
+function toggleAnimations() { state.settings.animations = document.getElementById('anim-toggle').checked; saveState(); }
+function toggleTheme() { saveState(); }
+function setVolume(v) { state.settings.volume = parseInt(v); document.getElementById('vol-label').textContent = v+'%'; saveState(); }
+function toggleMobileNav() {
+  const mn = document.getElementById('mobile-nav');
+  mn.classList.toggle('hidden');
+}
+
+// ─────────────────────────────────────────
+//  NAV
+// ─────────────────────────────────────────
+function setNavActive(id) {
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>{ p.classList.remove('active'); p.style.display='none'; });
+  const pg = document.getElementById(id);
+  if (pg) { pg.style.display='block'; pg.classList.add('active'); if(state.settings.animations) pg.classList.add('fade-in'); }
+}
+function showHub() {
+  showPage('page-hub');
+  setNavActive('nav-hub');
+  updateHeaderPlayer();
+}
+function showRanking() {
+  showPage('page-ranking');
+  setNavActive('nav-rank');
+  switchRankTab('rps');
+}
+function launchGame(g) {
+  playClick();
+  showPage('page-'+g);
+  switch(g) {
+    case 'rps': initRPS(); break;
+    case 'genius': initGenius(); break;
+    case 'guess': initGuess(); break;
+    case 'ttt': initTTT(); break;
+  }
+}
+
+// ─────────────────────────────────────────
+//  RANKING PAGE
+// ─────────────────────────────────────────
+function switchRankTab(game) {
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  event && event.target && event.target.classList.add('active');
+  // find active tab manually
+  const tabs = document.querySelectorAll('.rtab');
+  const map = ['rps','genius','guess','ttt'];
+  tabs.forEach((t,i)=>{ if(map[i]===game) t.classList.add('active'); });
+  const records = state.records[game] || [];
+  const c = document.getElementById('ranking-content');
+  c.innerHTML = '';
+  if (!records.length) { c.innerHTML = '<div class="rank-empty">🏆 Sem recordes ainda. Seja o primeiro!</div>'; return; }
+  const sorted = [...records].sort((a,b)=>b.score-a.score).slice(0,10);
+  sorted.forEach((r,i)=>{
+    const row = document.createElement('div');
+    row.className = 'rank-entry fade-in';
+    const numCls = i===0?'rank-num gold':i===1?'rank-num silver':i===2?'rank-num bronze':'rank-num';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    row.innerHTML = `<div class="${numCls}">${medal}</div><div class="rank-name">${r.name}</div><div class="rank-score">${r.score} pts</div>`;
+    c.appendChild(row);
+  });
+}
+
+// ─────────────────────────────────────────
+//  RECORD SAVING
+// ─────────────────────────────────────────
+function saveRecord(game, score) {
+  const rec = { name: state.player.name, avatar: state.player.avatar, score, date: new Date().toLocaleDateString('pt-BR') };
+  state.records[game] = state.records[game] || [];
+  state.records[game].push(rec);
+  state.records[game].sort((a,b)=>b.score-a.score);
+  if (state.records[game].length > 20) state.records[game] = state.records[game].slice(0,20);
+  saveState();
+}
+function recordMatch(won) {
+  state.player.games++;
+  state.totalMatches++;
+  if (won) {
+    state.player.wins++;
+    state.player.streak++;
+    if (state.player.streak > state.player.bestStreak) state.player.bestStreak = state.player.streak;
+  } else {
+    state.player.streak = 0;
+  }
+  addXP(won ? 30 : 10);
+  updateHeaderPlayer();
+}
+
+// ─────────────────────────────────────────
+//  PARTICLES (Hero background)
+// ─────────────────────────────────────────
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i=0; i<60; i++) {
+    particles.push({
+      x: Math.random()*1000, y: Math.random()*700,
+      vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.4,
+      r: Math.random()*2+0.5,
+      a: Math.random()*0.6+0.1,
+      c: Math.random()<0.5 ? [139,92,246] : [192,132,252]
+    });
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{
+      p.x = (p.x+p.vx+W)%W; p.y = (p.y+p.vy+H)%H;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${p.a})`;
+      ctx.fill();
+    });
+    // draw connections
+    for (let i=0;i<particles.length;i++) {
+      for (let j=i+1;j<particles.length;j++) {
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if (dist<100) {
+          ctx.strokeStyle = `rgba(139,92,246,${0.12*(1-dist/100)})`;
+          ctx.lineWidth=0.5;
+          ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ─────────────────────────────────────────
+//  ===== GAME: PEDRA PAPEL TESOURA =====
+// ─────────────────────────────────────────
+let rpsState = {};
+const rpsChoices = ['✊','✋','✌️'];
+const rpsNames = ['Pedra','Papel','Tesoura'];
+const rpsWins = { 0:2, 1:0, 2:1 }; // index wins over
+
+function rpsSetMode(mode) {
+  rpsState.mode = mode;
+  document.querySelectorAll('[id^="rps-mode"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('rps-mode-'+mode).classList.add('active');
+  initRPS();
+}
+function initRPS() {
+  if (!rpsState.mode) rpsState.mode = 'ai';
+  const md = rpsState.mode;
+  rpsState = { mode:md, diff:'normal', series:'md3', player1wins:0, player2wins:0, draws:0, round:0, seriesNeeded:2, rounds:[], p1:null, p2:null, gameOver:false };
+  renderRPS();
+}
+function renderRPS() {
+  const b = document.getElementById('rps-body');
+  const s = rpsState;
+  const p2label = s.mode==='ai' ? 'COMPUTADOR' : 'JOGADOR 2';
+  b.innerHTML = `
+    <div class="xp-inline"><div class="xp-inline-bar"><div class="xp-inline-fill" id="rps-xpbar" style="width:${getXPPercent()}%"></div></div><div class="xp-inline-label">Nv ${state.player.level} • ${state.player.xp} XP</div></div>
+    <div class="diff-select" id="rps-diff-select">
+      <div class="label-sm">DIFICULDADE</div>
+      ${s.mode==='ai' ? `
+      <button class="diff-btn ${s.diff==='easy'?'active':''}" onclick="rpsSetDiff('easy')">Fácil</button>
+      <button class="diff-btn ${s.diff==='normal'?'active':''}" onclick="rpsSetDiff('normal')">Normal</button>
+      <button class="diff-btn ${s.diff==='hard'?'active':''}" onclick="rpsSetDiff('hard')">Difícil</button>
+      ` : '<span style="color:var(--text3);font-size:0.85rem">Modo Multiplayer Ativo</span>'}
+    </div>
+    <div class="game-options-row">
+      <div class="label-sm">SÉRIE</div>
+      <button class="diff-btn ${s.series==='md1'?'active':''}" onclick="rpsSetSeries('md1','MD1',1)">MD1</button>
+      <button class="diff-btn ${s.series==='md3'?'active':''}" onclick="rpsSetSeries('md3','MD3',2)">MD3</button>
+      <button class="diff-btn ${s.series==='md5'?'active':''}" onclick="rpsSetSeries('md5','MD5',3)">MD5</button>
+    </div>
+    <div class="score-panel">
+      <div class="score-box"><div class="sb-label">JOGADOR 1</div><div class="sb-value" id="rps-p1score">${s.player1wins}</div></div>
+      <div class="score-box"><div class="sb-label">EMPATES</div><div class="sb-value" id="rps-draws">${s.draws}</div></div>
+      <div class="score-box"><div class="sb-label">${p2label}</div><div class="sb-value" id="rps-p2score">${s.player2wins}</div></div>
+    </div>
+    <div class="series-indicator" id="rps-series-ind">${rpsRenderSeriesIndicator()}</div>
+    <div class="rps-arena">
+      <div class="rps-player-side">
+        <div class="rps-player-label">JOGADOR 1</div>
+        <div class="rps-choice-display ${rpsGetClass(s.p1,'p')}" id="rps-p1-display">${s.p1!==null?rpsChoices[s.p1]:'❓'}</div>
+      </div>
+      <div class="rps-vs">VS</div>
+      <div class="rps-ai-side">
+        <div class="rps-player-label">${p2label}</div>
+        <div class="rps-choice-display ${rpsGetClass(s.p2,'ai')}" id="rps-p2-display">${s.p2!==null?rpsChoices[s.p2]:'❓'}</div>
+      </div>
+    </div>
+    ${s.gameOver ? `<div class="rps-result ${rpsGetResultClass()}">${rpsGetFinalMsg()}</div>` : (s.p1!==null && s.p2!==null && s.rounds.length>0 ? `<div class="rps-result ${rpsGetRoundClass()}">${rpsGetRoundMsg()}</div>` : '')}
+    ${!s.gameOver ? `
+      <div id="rps-waiting-label" style="text-align:center;color:var(--text3);font-size:0.85rem;margin-bottom:12px;min-height:20px">${s.mode==='mp'&&s.p1!==null&&s.p2===null?'Jogador 2: escolha sua jogada!':''}</div>
+      <div class="rps-choices">
+        ${rpsChoices.map((c,i)=>`<button class="rps-btn" onclick="rpsChoose(${i})"><span class="choice-icon">${c}</span><span class="choice-name">${rpsNames[i]}</span></button>`).join('')}
+      </div>` : ''}
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-secondary" onclick="initRPS()">🔄 Nova Partida</button>
+      ${s.gameOver?`<button class="btn-primary" style="max-width:200px" onclick="rpsSaveAndRecord()">💾 Salvar Resultado</button>`:''}
+    </div>
+    <div class="sep"></div>
+    <div class="history-section">
+      <div class="history-title">HISTÓRICO DA SESSÃO</div>
+      <div class="rps-history" id="rps-hist-list">${rpsRenderHistory()}</div>
+    </div>
+  `;
+}
+function rpsRenderSeriesIndicator() {
+  const s = rpsState;
+  let h = '';
+  for(let i=0;i<(s.series==='md1'?1:s.series==='md3'?3:5);i++) {
+    const r = s.rounds[i];
+    const cls = r ? (r==='p1'?'win':r==='p2'?'lose':'draw') : '';
+    h += `<div class="series-dot ${cls}"></div>`;
+  }
+  return h;
+}
+function rpsGetClass(choice, side) {
+  if (choice===null) return '';
+  const s = rpsState;
+  if (s.rounds.length===0 || s.p1===null || s.p2===null) return '';
+  const last = s.rounds[s.rounds.length-1];
+  if (last==='draw') return 'draw';
+  if (side==='p') return last==='p1'?'win':'lose';
+  return last==='p2'?'win':'lose';
+}
+function rpsGetRoundClass() {
+  const last = rpsState.rounds[rpsState.rounds.length-1];
+  return last==='p1'?'win':last==='p2'?'lose':'draw';
+}
+function rpsGetRoundMsg() {
+  const last = rpsState.rounds[rpsState.rounds.length-1];
+  if (last==='draw') return '🤝 Empate!';
+  if (last==='p1') return `✊ ${rpsNames[rpsState.p1]} vence ${rpsNames[rpsState.p2]}! Jogador 1 ganha a rodada!`;
+  return `✊ ${rpsNames[rpsState.p2]} vence ${rpsNames[rpsState.p1]}! ${rpsState.mode==='ai'?'IA ganha':'Jogador 2 ganha'} a rodada!`;
+}
+function rpsGetResultClass() {
+  const s = rpsState;
+  if (s.player1wins>s.player2wins) return 'win';
+  if (s.player2wins>s.player1wins) return 'lose';
+  return 'draw';
+}
+function rpsGetFinalMsg() {
+  const s = rpsState;
+  if (s.player1wins>s.player2wins) return `🏆 Jogador 1 vence a série ${s.player1wins}-${s.player2wins}!`;
+  if (s.player2wins>s.player1wins) return `💀 ${s.mode==='ai'?'IA':'Jogador 2'} vence a série ${s.player2wins}-${s.player1wins}!`;
+  return `🤝 Série empatada!`;
+}
+function rpsRenderHistory() {
+  const h = state.history.rps || [];
+  if (!h.length) return '<div class="history-empty">Sem histórico ainda</div>';
+  return h.slice(-10).reverse().map(r=>`<div class="history-row"><span>${r.date}</span><span>${r.series}</span><span style="color:${r.won?'var(--green)':'var(--red)'}">${r.won?'✓ Vitória':'✗ Derrota'}</span><span>${r.score} pts</span></div>`).join('');
+}
+function rpsSetDiff(d) { rpsState.diff = d; renderRPS(); }
+function rpsSetSeries(id, label, needed) {
+  rpsState.series = id; rpsState.seriesNeeded = needed;
+  rpsState.player1wins=0; rpsState.player2wins=0; rpsState.draws=0; rpsState.rounds=[];
+  renderRPS();
+}
+function rpsChoose(choice) {
+  if (rpsState.gameOver) return;
+  playClick();
+  const s = rpsState;
+  if (s.mode==='ai') {
+    s.p1 = choice;
+    s.p2 = rpsAIChoose(choice, s.diff);
+    rpsResolveRound();
+  } else {
+    if (s.p1===null) { s.p1 = choice; renderRPS(); }
+    else if (s.p2===null) { s.p2 = choice; rpsResolveRound(); }
+  }
+}
+function rpsAIChoose(p1choice, diff) {
+  if (diff==='easy') return Math.floor(Math.random()*3);
+  if (diff==='hard') return (p1choice+2)%3; // always win
+  // normal: 60% random, 40% counter
+  return Math.random()<0.4 ? (p1choice+2)%3 : Math.floor(Math.random()*3);
+}
+function rpsResolveRound() {
+  const s = rpsState;
+  let roundWinner;
+  if (s.p1===s.p2) { roundWinner='draw'; s.draws++; playTone(500,'sine',0.2,0.3); }
+  else if (rpsWins[s.p1]===s.p2) { roundWinner='p1'; s.player1wins++; playWin(); }
+  else { roundWinner='p2'; s.player2wins++; playLose(); }
+  s.rounds.push(roundWinner);
+  // check series over
+  if (s.player1wins>=s.seriesNeeded || s.player2wins>=s.seriesNeeded) {
+    s.gameOver = true;
+    const won = s.player1wins>s.player2wins;
+    recordMatch(won);
+    const score = won ? s.player1wins*100 + (s.seriesNeeded===1?50:s.seriesNeeded===2?100:150) : 20;
+    saveRecord('rps', score);
+  }
+  renderRPS();
+  if (!s.gameOver) setTimeout(()=>{ s.p1=null; if(s.mode==='ai') s.p2=null; renderRPS(); }, 1400);
+}
+function rpsSaveAndRecord() {
+  state.history.rps = state.history.rps || [];
+  const won = rpsState.player1wins > rpsState.player2wins;
+  state.history.rps.push({ date:new Date().toLocaleDateString('pt-BR'), series:rpsState.series.toUpperCase(), won, score: won?rpsState.player1wins*100:20 });
+  saveState(); showToast('✅ Resultado salvo!', 'success');
+}
+
+// ─────────────────────────────────────────
+//  ===== GAME: GENIUS =====
+// ─────────────────────────────────────────
+let geniusState = {};
+const gColors = ['green','blue','red','yellow'];
+const gToneFreqs = { green:392, blue:523, red:330, yellow:440 };
+
+function geniusSetMode(mode) {
+  geniusState.mode = mode;
+  document.querySelectorAll('[id^="genius-mode"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('genius-mode-'+mode).classList.add('active');
+  initGenius();
+}
+function initGenius() {
+  if (!geniusState.mode) geniusState.mode = 'solo';
+  const md = geniusState.mode;
+  geniusState = { mode:md, sequence:[], playerSeq:[], phase:1, score:0, record:state.records.genius[0]?.score||0, playing:false, playerTurn:false, currentPlayer:1, p1score:0, p2score:0, gameOver:false, speed:600 };
+  renderGenius();
+}
+function renderGenius() {
+  const g = geniusState;
+  document.getElementById('genius-body').innerHTML = `
+    <div class="genius-container">
+      <div class="xp-inline"><div class="xp-inline-bar"><div class="xp-inline-fill" style="width:${getXPPercent()}%"></div></div><div class="xp-inline-label">Nv ${state.player.level} • ${state.player.xp} XP</div></div>
+      <div class="genius-hud">
+        <div class="genius-stat"><div class="genius-stat-val" id="genius-phase">${g.phase}</div><div class="genius-stat-lbl">FASE</div></div>
+        <div class="genius-stat"><div class="genius-stat-val" id="genius-score">${g.score}</div><div class="genius-stat-lbl">PONTOS</div></div>
+        <div class="genius-stat"><div class="genius-stat-val" id="genius-record">${g.record}</div><div class="genius-stat-lbl">RECORDE</div></div>
+        ${g.mode==='mp'?`<div class="genius-stat"><div class="genius-stat-val" id="genius-cturn">J${g.currentPlayer}</div><div class="genius-stat-lbl">VEZ</div></div>`:''}
+      </div>
+      <div class="genius-wrapper">
+        <div class="genius-board">
+          <div class="genius-pad genius-green" id="genius-green" onclick="geniusPlayerClick('green')"></div>
+          <div class="genius-pad genius-red" id="genius-red" onclick="geniusPlayerClick('red')"></div>
+          <div class="genius-pad genius-yellow" id="genius-yellow" onclick="geniusPlayerClick('yellow')"></div>
+          <div class="genius-pad genius-blue" id="genius-blue" onclick="geniusPlayerClick('blue')"></div>
+
+          <div class="genius-center">
+            <h2>GENIUS</h2>
+            <span>GG Edition</span>
+          </div>
+        </div>
+      </div>
+      <div class="genius-msg" id="genius-msg">Pressione INICIAR para jogar</div>
+      <div class="genius-controls">
+        <button class="btn-primary" style="max-width:180px" onclick="geniusStart()" id="genius-start-btn">▶ INICIAR</button>
+        <button class="btn-secondary" onclick="initGenius()">↺ Reset</button>
+      </div>
+      <div class="sep"></div>
+      <div class="history-section">
+        <div class="history-title">MELHORES RECORDES</div>
+        <div id="genius-rec-list">${geniusRenderRecords()}</div>
+      </div>
+    </div>
+  `;
+}
+function geniusRenderRecords() {
+  const r = state.records.genius || [];
+  if (!r.length) return '<div class="history-empty">Sem recordes ainda</div>';
+  return r.slice(0,5).map((e,i)=>`<div class="history-row"><span>#${i+1}</span><span>${e.name}</span><span style="color:var(--purple2);font-family:\'Space Mono\',monospace">${e.score} pts</span></div>`).join('');
+}
+function geniusStart() {
+  const g = geniusState;
+  if (g.playing) return;
+  g.gameOver = false;
+  g.sequence = [];
+  g.phase = 1;
+  g.score = 0;
+  g.speed = 600;
+  document.getElementById('genius-start-btn').style.display='none';
+  geniusNextPhase();
+}
+function geniusNextPhase() {
+  const g = geniusState;
+  g.playing = true; g.playerTurn = false;
+  g.playerSeq = [];
+  g.sequence.push(gColors[Math.floor(Math.random()*4)]);
+  setGeniusMsg('👁️ Observe a sequência...');
+  updateGeniusHUD();
+  gAllDim();
+  setTimeout(()=>geniusPlaySequence(0), 600);
+}
+function geniusPlaySequence(idx) {
+  const g = geniusState;
+  if (idx>=g.sequence.length) { setTimeout(()=>{ g.playerTurn=true; setGeniusMsg(`🎮 Sua vez! (${g.sequence.length} cor${g.sequence.length>1?'es':''})`); }, 400); return; }
+  const color = g.sequence[idx];
+  gLight(color, ()=>{ setTimeout(()=>{ gAllDim(); setTimeout(()=>geniusPlaySequence(idx+1), 200); }, g.speed-100); });
+  setTimeout(()=>geniusPlaySequence(idx+1), g.speed);
+}
+function geniusPlaySequence(idx) {
+  const g = geniusState;
+  if (idx>=g.sequence.length) {
+    setTimeout(()=>{ g.playerTurn=true; setGeniusMsg(`🎮 Sua vez! Repita ${g.sequence.length} cor${g.sequence.length>1?'es':''}!`); }, 500);
+    return;
+  }
+  const color = g.sequence[idx];
+  setTimeout(()=>{
+    gLight(color);
+    setTimeout(()=>{ gAllDim(); setTimeout(()=>geniusPlaySequence(idx+1), Math.max(200,g.speed*0.3)); }, g.speed*0.7);
+  }, idx*g.speed);
+}
+function gLight(color, cb) {
+  const btn = document.getElementById('genius-'+color);
+  if (!btn) return;
+  gAllDim();
+  btn.classList.add('active');
+  playBeep(gToneFreqs[color]);
+  if (cb) setTimeout(cb, geniusState.speed*0.7);
+  setTimeout(()=>{ btn.classList.remove('active'); }, geniusState.speed*0.6);
+}
+function gAllDim() {
+  gColors.forEach(c=>{ const b=document.getElementById('genius-'+c); if(b) b.classList.remove('active'); });
+}
+function geniusPlayerClick(color) {
+  const g = geniusState;
+  if (!g.playerTurn || g.gameOver) return;
+  playBeep(gToneFreqs[color]);
+  gLight(color);
+  g.playerSeq.push(color);
+  const idx = g.playerSeq.length-1;
+  if (g.playerSeq[idx]!==g.sequence[idx]) {
+    // Wrong!
+    g.playerTurn=false; g.gameOver=true;
+    playLose();
+    setGeniusMsg(`❌ Errou! A sequência era: ${g.sequence.map(c=>c==='green'?'🟢':c==='blue'?'🔵':c==='red'?'🔴':'🟡').join('')}`);
+    recordMatch(false);
+    const score = g.score;
+    if (score > 0) saveRecord('genius', score);
+    state.history.genius = state.history.genius||[];
+    state.history.genius.push({ phase:g.phase, score, date:new Date().toLocaleDateString('pt-BR') });
+    saveState();
+    document.getElementById('genius-start-btn').style.display='block';
+    document.getElementById('genius-start-btn').textContent='▶ JOGAR NOVAMENTE';
+    return;
+  }
+  if (g.playerSeq.length===g.sequence.length) {
+    // Phase complete!
+    g.score += g.phase * 10;
+    g.phase++;
+    g.speed = Math.max(250, g.speed - 20);
+    if (g.score > g.record) { g.record = g.score; setGeniusMsg(`⭐ NOVO RECORDE! ${g.score} pts!`); }
+    else setGeniusMsg(`✅ Correto! Próxima fase...`);
+    playWin();
+    g.playerTurn = false;
+    recordMatch(true);
+    updateGeniusHUD();
+    setTimeout(()=>geniusNextPhase(), 1200);
+  }
+}
+function setGeniusMsg(msg) { const el=document.getElementById('genius-msg'); if(el) el.textContent=msg; }
+function updateGeniusHUD() {
+  const g = geniusState;
+  const phase=document.getElementById('genius-phase'); if(phase)phase.textContent=g.phase;
+  const score=document.getElementById('genius-score'); if(score)score.textContent=g.score;
+  const rec=document.getElementById('genius-record'); if(rec)rec.textContent=g.record;
+}
+
+// ─────────────────────────────────────────
+//  ===== GAME: ADIVINHAÇÃO =====
+// ─────────────────────────────────────────
+let guessState = {};
+
+function guessSetMode(mode) {
+  guessState.mode = mode;
+  document.querySelectorAll('[id^="guess-mode"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('guess-mode-'+mode).classList.add('active');
+  initGuess();
+}
+function initGuess() {
+  if (!guessState.mode) guessState.mode = 'solo';
+  const md = guessState.mode;
+  const diff = guessState.diff || 'normal';
+  const maxTries = diff==='easy'?12:diff==='normal'?8:5;
+  const hardcore = diff==='hardcore';
+  guessState = {
+    mode:md, diff, hardcore,
+    secret: Math.floor(Math.random()*101),
+    tries:0, maxTries, history:[],
+    found:false, gameOver:false,
+    currentPlayer:1,
+    p1found:false, p2found:false,
+    p1tries:0, p2tries:0,
+    timerVal:0, timerActive:false,
+    low:0, high:100
+  };
+  clearInterval(guessState._timer);
+  renderGuess();
+}
+function renderGuess() {
+  const g = guessState;
+  const p2label = 'JOGADOR 2';
+  document.getElementById('guess-body').innerHTML = `
+    <div class="xp-inline"><div class="xp-inline-bar"><div class="xp-inline-fill" style="width:${getXPPercent()}%"></div></div><div class="xp-inline-label">Nv ${state.player.level} • ${state.player.xp} XP</div></div>
+    <div class="diff-select">
+      <div class="label-sm">DIFICULDADE</div>
+      <button class="diff-btn ${g.diff==='easy'?'active':''}" onclick="guessSetDiff('easy')">Fácil (12)</button>
+      <button class="diff-btn ${g.diff==='normal'?'active':''}" onclick="guessSetDiff('normal')">Normal (8)</button>
+      <button class="diff-btn ${g.diff==='hard'?'active':''}" onclick="guessSetDiff('hard')">Difícil (5)</button>
+      <button class="diff-btn ${g.diff==='hardcore'?'active':''}" onclick="guessSetDiff('hardcore')">Hardcore</button>
+    </div>
+    <div class="timer-display" id="guess-timer">${formatTime(g.timerVal)}</div>
+    <div class="score-panel">
+      <div class="score-box ${g.mode==='mp'&&g.currentPlayer===1?'active':''}"><div class="sb-label">TENTATIVAS</div><div class="sb-value" id="guess-tries">${g.tries}</div></div>
+      <div class="score-box"><div class="sb-label">MÁXIMO</div><div class="sb-value">${g.maxTries==='∞'?'∞':g.maxTries}</div></div>
+      ${g.mode==='mp'?`<div class="score-box ${g.currentPlayer===2?'active':''}"><div class="sb-label">JOGADOR</div><div class="sb-value" id="guess-curplayer">J${g.currentPlayer}</div></div>`:''}
+    </div>
+    ${!g.hardcore ? `
+    <div class="number-range">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text2)"><span>0</span><span style="color:var(--yellow);font-family:'Space Mono',monospace">Zona: ${g.low} — ${g.high}</span><span>100</span></div>
+      <div class="range-bar">
+        <div class="range-fill" style="left:${g.low}%;width:${g.high-g.low}%"></div>
+        ${g.history.length>0?`<div class="range-marker" style="left:${g.history[g.history.length-1].num}%"></div>`:''}
+      </div>
+    </div>` : '<div style="text-align:center;color:var(--red);font-weight:700;margin-bottom:20px;letter-spacing:2px">⚠️ MODO HARDCORE — SEM DICAS!</div>'}
+    <div class="guess-hint ${guessGetHintClass()}" id="guess-hint">${guessGetHintText()}</div>
+    <div class="guess-attempts" id="guess-pips">${guessPips()}</div>
+    ${!g.gameOver ? `
+    <div class="guess-input-row">
+      <input class="guess-input" type="number" id="guess-num" min="0" max="100" placeholder="0-100" onkeydown="if(event.key==='Enter')guessSubmit()">
+      <button class="btn-primary" style="max-width:120px" onclick="guessSubmit()">TENTAR</button>
+    </div>` : `<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><button class="btn-primary" style="max-width:200px" onclick="initGuess()">▶ Novo Jogo</button></div>`}
+    ${g.gameOver?'':`<button class="btn-secondary" style="width:100%;margin-top:8px" onclick="initGuess()">🔄 Reiniciar</button>`}
+    <div class="sep"></div>
+    <div class="history-section">
+      <div class="history-title">HISTÓRICO DE TENTATIVAS</div>
+      <div class="guess-history" id="guess-hist">${guessHistHTML()}</div>
+    </div>
+  `;
+  if (!g.gameOver && !g.timerActive) { g.timerActive=true; guessStartTimer(); }
+  setTimeout(()=>{ const el=document.getElementById('guess-num'); if(el)el.focus(); },100);
+}
+function guessPips() {
+  const g = guessState;
+  if (g.maxTries==='∞') return '';
+  let h='';
+  for(let i=0;i<g.maxTries;i++){
+    if(i<g.history.length) { const e=g.history[i]; h+=`<div class="attempt-pip ${e.correct?'right':'wrong'}"></div>`; }
+    else h+=`<div class="attempt-pip ${i<g.tries?'used':''}"></div>`;
+  }
+  return h;
+}
+function guessHistHTML() {
+  const h = guessState.history;
+  if (!h.length) return '<div class="history-empty">Nenhuma tentativa ainda</div>';
+  return h.map(e=>`<div class="guess-hist-row"><span style="font-family:\'Space Mono\',monospace;color:var(--purple2)">${e.num}</span><span style="color:${e.correct?'var(--green)':e.dir==='higher'?'var(--orange)':'var(--blue)'}">${e.correct?'✓ CORRETO':e.dir==='higher'?'▲ Maior':'▼ Menor'}</span><span style="color:var(--text3)">${e.player?'J'+e.player:''}</span></div>`).join('');
+}
+function guessGetHintClass() {
+  const g = guessState;
+  if (!g.history.length) return '';
+  if (g.found||g.gameOver) return g.found?'correct':'';
+  const last = g.history[g.history.length-1];
+  return last.correct?'correct':last.dir==='higher'?'higher':'lower';
+}
+function guessGetHintText() {
+  const g = guessState;
+  if (!g.history.length) return '🎯 Qual é o número secreto entre 0 e 100?';
+  if (g.found) return `🎉 ACERTOU! Era ${g.secret}! Em ${g.tries} tentativas!`;
+  if (g.gameOver) return `💀 Game Over! O número era ${g.secret}`;
+  if (g.hardcore) return '🔒 Sem dicas no modo Hardcore!';
+  const last = g.history[g.history.length-1];
+  return last.dir==='higher' ? `▲ O número é MAIOR que ${last.num}` : `▼ O número é MENOR que ${last.num}`;
+}
+function guessStartTimer() {
+  const g = guessState;
+  g._timer = setInterval(()=>{
+    if (!g.timerActive || g.gameOver) { clearInterval(g._timer); return; }
+    g.timerVal++;
+    const el = document.getElementById('guess-timer');
+    if (el) el.textContent = formatTime(g.timerVal);
+  }, 1000);
+}
+function formatTime(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function guessSetDiff(d) { guessState.diff=d; clearInterval(guessState._timer); initGuess(); }
+function guessSubmit() {
+  const g = guessState;
+  if (g.gameOver) return;
+  const el = document.getElementById('guess-num');
+  const val = parseInt(el.value);
+  if (isNaN(val)||val<0||val>100) { showToast('⚠️ Digite um número entre 0 e 100!'); playError(); return; }
+  playClick();
+  el.value='';
+  const correct = val===g.secret;
+  const dir = val<g.secret?'higher':'lower';
+  g.tries++;
+  if (!g.hardcore) {
+    if (dir==='higher' && val>g.low) g.low=val;
+    if (dir==='lower' && val<g.high) g.high=val;
+  }
+  g.history.push({ num:val, correct, dir, player:g.mode==='mp'?g.currentPlayer:null });
+  if (correct) {
+    g.found=true; g.gameOver=true; g.timerActive=false;
+    clearInterval(g._timer);
+    playWin();
+    recordMatch(true);
+    const score = Math.max(10, 1000 - g.tries*80 - g.timerVal*2);
+    saveRecord('guess', score);
+    state.history.guess=state.history.guess||[];
+    state.history.guess.push({ tries:g.tries, time:formatTime(g.timerVal), score, date:new Date().toLocaleDateString('pt-BR') });
+    saveState();
+    if (g.mode==='mp') g.currentPlayer = g.currentPlayer===1?2:1;
+  } else if (g.tries>=g.maxTries && g.maxTries!=='∞') {
+    g.gameOver=true; g.timerActive=false; clearInterval(g._timer);
+    playLose(); recordMatch(false);
+  } else {
+    if (g.mode==='mp') g.currentPlayer = g.currentPlayer===1?2:1;
+  }
+  renderGuess();
+}
+
+// ─────────────────────────────────────────
+//  ===== GAME: JOGO DA VELHA =====
+// ─────────────────────────────────────────
+let tttState = {};
+
+function tttSetMode(mode) {
+  tttState.mode = mode;
+  document.querySelectorAll('[id^="ttt-mode"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ttt-mode-'+mode).classList.add('active');
+  initTTT();
+}
+function initTTT() {
+  if (!tttState.mode) tttState.mode = 'ai';
+  const md = tttState.mode;
+  const diff = tttState.diff || 'normal';
+  tttState = {
+    mode:md, diff,
+    board: Array(9).fill(null),
+    currentPlayer:'X',
+    winner:null, gameOver:false, winLine:[],
+    xWins:0, oWins:0, draws:0,
+    round:1, rounds:[],
+    thinking:false
+  };
+  renderTTT();
+  if (md==='ai' && tttState.currentPlayer==='O') setTimeout(tttAIMove, 600);
+}
+function renderTTT() {
+  const t = tttState;
+  const p2label = t.mode==='ai' ? '🤖 IA' : '👤 J2';
+  document.getElementById('ttt-body').innerHTML = `
+    <div class="ttt-container">
+      <div class="xp-inline"><div class="xp-inline-bar"><div class="xp-inline-fill" style="width:${getXPPercent()}%"></div></div><div class="xp-inline-label">Nv ${state.player.level} • ${state.player.xp} XP</div></div>
+      <div class="diff-select">
+        <div class="label-sm">DIFICULDADE IA</div>
+        <button class="diff-btn ${t.diff==='easy'?'active':''}" onclick="tttSetDiff('easy')">Fácil</button>
+        <button class="diff-btn ${t.diff==='normal'?'active':''}" onclick="tttSetDiff('normal')">Normal</button>
+        <button class="diff-btn ${t.diff==='hard'?'active':''}" onclick="tttSetDiff('hard')">Difícil</button>
+      </div>
+      <div class="score-panel">
+        <div class="score-box"><div class="sb-label">❌ ${t.mode==='mp'?'J1':'Você'}</div><div class="sb-value" id="ttt-xwins">${t.xWins}</div></div>
+        <div class="score-box"><div class="sb-label">🤝 Empates</div><div class="sb-value" id="ttt-draws">${t.draws}</div></div>
+        <div class="score-box"><div class="sb-label">⭕ ${p2label}</div><div class="sb-value" id="ttt-owins">${t.oWins}</div></div>
+      </div>
+      <div class="rounds-display" id="ttt-rounds">${tttRenderRounds()}</div>
+      <div class="ttt-turn" id="ttt-turn">${tttTurnText()}</div>
+      <div class="ttt-grid" id="ttt-grid">${tttRenderGrid()}</div>
+      <div class="ttt-result ${tttResultClass()}" id="ttt-result">${tttResultText()}</div>
+      <div class="ttt-thinking" id="ttt-thinking">${t.thinking?'🤖 IA pensando...':''}</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" style="max-width:180px" onclick="tttNewRound()">▶ Nova Rodada</button>
+        <button class="btn-secondary" onclick="initTTT()">↺ Reset Total</button>
+      </div>
+      <div class="sep"></div>
+      <div class="history-section">
+        <div class="history-title">HISTÓRICO DE RODADAS</div>
+        <div id="ttt-hist">${tttHistHTML()}</div>
+      </div>
+    </div>
+  `;
+}
+function tttRenderGrid() {
+  return tttState.board.map((cell,i)=>{
+    const winner = tttState.winLine.includes(i);
+    return `<div class="ttt-cell ${cell?'taken':''} ${cell?cell.toLowerCase():''} ${winner?'winner':''}" onclick="tttClick(${i})">${cell||''}</div>`;
+  }).join('');
+}
+function tttRenderRounds() {
+  return tttState.rounds.map(r=>`<div class="round-dot ${r==='X'?'x-win':r==='O'?'o-win':'draw-r'}">${r==='X'?'❌':r==='O'?'⭕':'🤝'}</div>`).join('');
+}
+function tttTurnText() {
+  const t = tttState;
+  if (t.gameOver) return t.winner ? (t.winner==='X'?'❌ Vence!':'⭕ Vence!') : '🤝 Empate!';
+  return `Vez do ${t.currentPlayer==='X'?'❌':t.currentPlayer==='O'?'⭕':''} (${t.mode==='mp'?(t.currentPlayer==='X'?'J1':'J2'):t.currentPlayer==='X'?'Você':'IA'})`;
+}
+function tttResultClass() {
+  const t = tttState;
+  if (!t.gameOver) return '';
+  if (!t.winner) return 'draw-r';
+  return t.winner==='X'?'win-x':'win-o';
+}
+function tttResultText() {
+  const t = tttState;
+  if (!t.gameOver) return '';
+  if (!t.winner) return '🤝 Empate!';
+  const isX = t.winner==='X';
+  if (t.mode==='ai') return isX ? '🏆 Você venceu!' : '💀 IA venceu!';
+  return isX ? '🏆 Jogador 1 venceu!' : '🏆 Jogador 2 venceu!';
+}
+function tttHistHTML() {
+  const h = state.history.ttt || [];
+  if (!h.length) return '<div class="history-empty">Sem histórico ainda</div>';
+  return h.slice(-8).reverse().map(r=>`<div class="history-row"><span>${r.date}</span><span>${r.mode==='ai'?'vs IA':'vs J2'}</span><span style="color:${r.result==='win'?'var(--green)':r.result==='lose'?'var(--red)':'var(--yellow)'}">${r.result==='win'?'✓ Vitória':r.result==='lose'?'✗ Derrota':'= Empate'}</span></div>`).join('');
+}
+function tttSetDiff(d) { tttState.diff=d; initTTT(); }
+function tttClick(idx) {
+  const t = tttState;
+  if (t.gameOver || t.board[idx] || t.thinking) return;
+  if (t.mode==='ai' && t.currentPlayer!=='X') return;
+  playClick();
+  t.board[idx] = t.currentPlayer;
+  const win = tttCheckWin();
+  if (win) { t.winner=t.currentPlayer; t.winLine=win; t.gameOver=true; tttEndRound(); }
+  else if (t.board.every(c=>c)) { t.gameOver=true; tttEndRound(); }
+  else { t.currentPlayer = t.currentPlayer==='X'?'O':'X'; if(t.mode==='ai') { t.thinking=true; updateTTTThinking(); setTimeout(tttAIMove, 500+Math.random()*300); } }
+  renderTTT();
+}
+function tttCheckWin() {
+  const b = tttState.board;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const line of lines) { if(b[line[0]]&&b[line[0]]===b[line[1]]&&b[line[1]]===b[line[2]]) return line; }
+  return null;
+}
+function tttEndRound() {
+  const t = tttState;
+  if (t.winner==='X') { t.xWins++; t.rounds.push('X'); playWin(); recordMatch(t.mode==='mp'||true); }
+  else if (t.winner==='O') { t.oWins++; t.rounds.push('O'); if(t.mode==='ai') { playLose(); recordMatch(false); } else { playWin(); recordMatch(true); } }
+  else { t.draws++; t.rounds.push('D'); playTone(440,'sine',0.3,0.2); recordMatch(false); }
+  const score = t.winner==='X' ? 100 + t.round*20 : t.winner?20:50;
+  saveRecord('ttt', score);
+  state.history.ttt=state.history.ttt||[];
+  state.history.ttt.push({ date:new Date().toLocaleDateString('pt-BR'), mode:t.mode, result:t.winner==='X'?'win':t.winner==='O'?'lose':'draw' });
+  saveState();
+}
+function tttNewRound() {
+  const t = tttState;
+  t.board = Array(9).fill(null);
+  t.currentPlayer = 'X'; t.winner=null; t.gameOver=false; t.winLine=[]; t.thinking=false;
+  t.round++;
+  renderTTT();
+}
+function updateTTTThinking() { const el=document.getElementById('ttt-thinking'); if(el)el.textContent='🤖 IA pensando...'; }
+function tttAIMove() {
+  const t = tttState;
+  if (t.gameOver) return;
+  t.thinking = false;
+  let move;
+  if (t.diff==='hard') move = tttMinimax(t.board, 'O').idx;
+  else if (t.diff==='normal') move = Math.random()<0.7 ? tttMinimax(t.board,'O').idx : tttRandomMove();
+  else move = tttRandomMove();
+  if (move===undefined || move===null) { renderTTT(); return; }
+  t.board[move] = 'O';
+  playTone(600,'sine',0.1,0.15);
+  const win = tttCheckWin();
+  if (win) { t.winner='O'; t.winLine=win; t.gameOver=true; tttEndRound(); }
+  else if (t.board.every(c=>c)) { t.gameOver=true; tttEndRound(); }
+  else t.currentPlayer='X';
+  renderTTT();
+}
+function tttRandomMove() {
+  const empty = tttState.board.map((c,i)=>c?null:i).filter(x=>x!==null);
+  return empty[Math.floor(Math.random()*empty.length)];
+}
+function tttMinimax(board, player) {
+  const winner = tttMinimaxWin(board);
+  if (winner==='O') return {score:10};
+  if (winner==='X') return {score:-10};
+  const empty = board.map((c,i)=>c?null:i).filter(x=>x!==null);
+  if (!empty.length) return {score:0};
+  const moves = [];
+  for (const idx of empty) {
+    const nb = [...board]; nb[idx]=player;
+    const result = tttMinimax(nb, player==='O'?'X':'O');
+    moves.push({idx, score:result.score});
+  }
+  return player==='O' ? moves.reduce((a,b)=>b.score>a.score?b:a) : moves.reduce((a,b)=>b.score<a.score?b:a);
+}
+function tttMinimaxWin(board) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) { if(board[l[0]]&&board[l[0]]===board[l[1]]&&board[l[1]]===board[l[2]]) return board[l[0]]; }
+  return null;
+}
+
+// ─────────────────────────────────────────
+//  SCROLL EFFECTS
+// ─────────────────────────────────────────
+window.addEventListener('scroll', ()=>{
+  const header = document.getElementById('main-header');
+  if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ─────────────────────────────────────────
+//  LOADER & INIT
+// ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', ()=>{
+  updateHeaderPlayer();
+  initParticles();
+
+  // Apply saved settings to toggles
+  document.getElementById('sfx-toggle').checked = state.settings.sfx;
+  document.getElementById('music-toggle').checked = state.settings.music;
+  document.getElementById('anim-toggle').checked = state.settings.animations;
+  document.getElementById('theme-toggle').checked = true;
+  document.getElementById('vol-slider').value = state.settings.volume;
+  document.getElementById('vol-label').textContent = state.settings.volume+'%';
+
+  // Loader
+  setTimeout(()=>{
+    const statusEl = document.querySelector('.loader-status');
+    if (statusEl) { statusEl.textContent = 'Carregando jogos...'; }
+  }, 800);
+  setTimeout(()=>{
+    const statusEl = document.querySelector('.loader-status');
+    if (statusEl) statusEl.textContent = 'Pronto!';
+  }, 1800);
+  setTimeout(()=>{
+    document.getElementById('loader').classList.add('fade-out');
+    setTimeout(()=>{
+      const l = document.getElementById('loader');
+      if (l) l.style.display='none';
+    }, 700);
+  }, 2400);
+
+  showHub();
+});
+
+</script>
+</body>
+</html>
